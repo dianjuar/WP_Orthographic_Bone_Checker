@@ -87,4 +87,3 @@ class GetstringsSpider(scrapy.Spider):
 
             # release the string scraped
             yield string_to_analize_item
-
