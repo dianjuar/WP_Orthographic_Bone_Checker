@@ -17,7 +17,7 @@ class GetstringsSpider(scrapy.Spider):
 
     debug = True
 
-    def __init__(self, WPTpage=None, *args, **kwargs):
+    def __init__(self, WPTpage=None, nPages=-1,*args, **kwargs):
         '''
         @brief the constructor of the spider
 
@@ -36,22 +36,37 @@ class GetstringsSpider(scrapy.Spider):
             self.start_urls = ['https://translate.wordpress.org/projects/wp/dev/es/default']
         else:
             self.start_urls = [WPTpage]
+
+        self.nPages = int(nPages)
         
-    # def start_requests(self):
-    # '''
-    # @overwrite
-    # @brief hepls to manipulate the start_urls to run several times the spider.
-    # '''
-    #     pass        
+    def start_requests(self):
+        '''
+        @overwrite
+        @brief hepls to manipulate the start_urls to run several times the spider.
+        @example 
+        
+        urls = [
+          'http://quotes.toscrape.com/page/1/',
+          'http://quotes.toscrape.com/page/2/',
+        ]
+        for url in urls:
+          yield scrapy.Request(url=url, callback=self.parse)
+        '''
+
+        # Create all the url to scrap
+        for npage in range(2, self.nPages):
+            self.start_urls.append( self.start_urls[0]+'?page='+str(npage) )
+
+        # Visit all the urls
+        for url in self.start_urls:
+            yield scrapy.Request(url=url, callback=self.parse)
     
     def parse(self, response):
-
         '''
         if( self.debug ):
             from scrapy.utils.response import open_in_browser
             open_in_browser(response)
         '''
-
         hxs = scrapy.Selector( response )
 
         # With this we get all the table's rows in the page visited
@@ -60,7 +75,6 @@ class GetstringsSpider(scrapy.Spider):
                                             td[ contains(@class, "foreign-text")]''')
         # Iterate each row
         for rows in translatedRows:
-
             # Get the string
             stringToAnalize = rows.xpath('./text()').extract_first()
 
