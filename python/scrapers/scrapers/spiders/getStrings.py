@@ -55,7 +55,8 @@ class GetstringsSpider(scrapy.Spider):
 
         # Create all the url to scrap
         for npage in range(2, self.nPages):
-            self.start_urls.append( self.start_urls[0]+'?page='+str(npage) )
+            # 'filters[status]=current&' search by status current only
+            self.start_urls.append( self.start_urls[0]+'?filters[status]=current&page='+str(npage) )
 
         # Visit all the urls
         for url in self.start_urls:
@@ -86,3 +87,4 @@ class GetstringsSpider(scrapy.Spider):
 
             # release the string scraped
             yield string_to_analize_item
+
