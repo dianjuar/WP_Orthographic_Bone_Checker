@@ -16,3 +16,18 @@ class item_numberOfPages(scrapy.Item):
     # Number of pages to scrap
     numberOfPages = scrapy.Field()
     pass
+
+
+class item_stringToAnalize(scrapy.Item):
+    '''
+    @brief scrapy item to store the strings scraped
+    '''
+
+    # The param itself
+    string = scrapy.Field()
+
+    # The url where the string is located
+    url = scrapy.Field()
+
+    # define the fields for your item here like:
+    # name = scrapy.Field()
