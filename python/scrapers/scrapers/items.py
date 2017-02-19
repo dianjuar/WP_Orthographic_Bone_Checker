@@ -9,7 +9,7 @@ import scrapy
 
 
 # The scrapy item of used in the spider GetnumberpagesSpider
-class numberOfPages(scrapy.Item):
+class item_numberOfPages(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
 
