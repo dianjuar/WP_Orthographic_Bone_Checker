@@ -51,7 +51,7 @@ class checkStringPipeline(object):
             detectErrors = self.detectErrors( item['string'] )
 
             if( detectErrors is not False):
-                items['erros'] = detectErrors
+                item['errors'] = detectErrors
                 return item
             else:
                 raise DropItem("No error detected on %s" % item)
@@ -62,9 +62,6 @@ class checkStringPipeline(object):
         pass
 
     def detectErrors(self, string ):
-
-        spellChecker = SpellChecker('es')
-        spellChecker.set_text( string )
         '''
         @brief get all errors given a string
         @return False
@@ -73,11 +70,23 @@ class checkStringPipeline(object):
                 Dict
                 With the erros
         '''
+        spellChecker = SpellChecker('es')
+        spellChecker.set_text( string )
+
         errors = False
 
         for err in spellChecker:
-            pass
+            # convert only once errors to a dictionery
+            if type(errors) is not dict() :
+                errors = {}
+                errors['errorWord'] = list()
+            
+            errors['errorWord'].append( err.word )
+
+        if ( errors is type(dict()) ):
+            print( errors )
+            pdb.set_trace()
 
         # value_is_true if condition else value_is_false
         # "fat" if is_fat else "not fat"
-        return False if (errors is not type(dict())) else errors 
+        return errors

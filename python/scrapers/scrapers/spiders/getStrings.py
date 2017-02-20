@@ -23,6 +23,12 @@ class GetstringsSpider(scrapy.Spider):
     allowed_domains = ["translate.wordpress.org"]
     start_urls = []
 
+    '''
+    Activate several events if is set True for debugging or test proposes 
+    '''
+    debug = False
+    # debug = True
+
     def __init__(self, WPTpage=None,*args, **kwargs):
         '''
         @brief the constructor of the spider
@@ -58,7 +64,8 @@ class GetstringsSpider(scrapy.Spider):
                                             preceding::a[1]/
                                                 text()''')
 
-        self.nPages = int( nPagesToScrap.extract_first() )
+        # If debug is set, nPages = 10
+        self.nPages = int( nPagesToScrap.extract_first() ) if self.debug is False else 10
 
         item_npages = item_numberOfPages()
         item_npages['numberOfPages'] = self.nPages
