@@ -2,12 +2,20 @@
 import scrapy
 import pdb
 
+#-items
 # Import the item right. For test purposes this spider will call in several ways
 # Using this try I catch all possibilities   
+# String to analize
 try:
     from scrapers.scrapers.items import item_stringToAnalize
 except ImportError:
     from scrapers.items import item_stringToAnalize
+# number of pages
+try:
+    from scrapers.scrapers.items import item_numberOfPages
+except ImportError:
+    from scrapers.items import item_numberOfPages
+#-items
 
 
 class GetstringsSpider(scrapy.Spider):
@@ -15,9 +23,7 @@ class GetstringsSpider(scrapy.Spider):
     allowed_domains = ["translate.wordpress.org"]
     start_urls = []
 
-    debug = True
-
-    def __init__(self, WPTpage=None, nPages=-1,*args, **kwargs):
+    def __init__(self, WPTpage=None,*args, **kwargs):
         '''
         @brief the constructor of the spider
 
@@ -37,36 +43,47 @@ class GetstringsSpider(scrapy.Spider):
         else:
             self.start_urls = [WPTpage]
 
-        self.nPages = int(nPages)
-        
-    def start_requests(self):
         '''
-        @overwrite
-        @brief hepls to manipulate the start_urls to run several times the spider.
-        @example 
-        
-        urls = [
-          'http://quotes.toscrape.com/page/1/',
-          'http://quotes.toscrape.com/page/2/',
-        ]
-        for url in urls:
-          yield scrapy.Request(url=url, callback=self.parse)
+        @brief N pages to scrap
         '''
+        self.nPages = -1
+    
+    def parse(self, response):
 
+        # ---------------- Get the number of pages to scrap ON
+        hxs = scrapy.Selector( response )
+        nPagesToScrap = hxs.xpath('''//div[@class="gp-content"]//
+                                        div[@class="paging"]/
+                                            *[@class="next"]/
+                                            preceding::a[1]/
+                                                text()''')
+
+        self.nPages = int( nPagesToScrap.extract_first() )
+
+        item_npages = item_numberOfPages()
+        item_npages['numberOfPages'] = self.nPages
+
+        yield item_npages
+        # ---------------- Get the number of pages to scrap OFF
+        # ---------------- Construct all the urls ON
+        stringsUrl = list()
         # Create all the url to scrap
         for npage in range(2, self.nPages):
             # 'filters[status]=current&' search by status current only
-            self.start_urls.append( self.start_urls[0]+'?filters[status]=current&page='+str(npage) )
+            stringsUrl.append( self.start_urls[0]+'?filters[status]=current&page='+str( npage) )
+        
+        # ---------------- Construct all the urls OFF
 
         # Visit all the urls
-        for url in self.start_urls:
-            yield scrapy.Request(url=url, callback=self.parse)
-    
-    def parse(self, response):
+        for url in stringsUrl:
+            yield scrapy.Request(url=url, 
+                                 callback=self.getStrings)
+
+        pass
+
+    def getStrings(self, response):
         '''
-        if( self.debug ):
-            from scrapy.utils.response import open_in_browser
-            open_in_browser(response)
+        Get all the strings needed to analyse, if they have an error.
         '''
         hxs = scrapy.Selector( response )
 

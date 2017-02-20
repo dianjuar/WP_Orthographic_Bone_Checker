@@ -11,7 +11,6 @@ from scrapy.utils.project   import get_project_settings
 
 
 #--the spiders
-from scrapers.scrapers.spiders.getNumberPages   import GetnumberpagesSpider
 from scrapers.scrapers.spiders.getStrings       import GetstringsSpider
 #--the spiders
 
@@ -50,21 +49,6 @@ class main(object):
     """
 
     def __init__(self):
-        self.pagesToScrap = -1
-
-        # a Slot is connected with the signal of finished of the spider 'GetnumberpagesSpider'
-        # when the number is gotten the method to get the strings is launch
-        self.get_NumberOfPages()
-    
-    def slot_pagesToScrap( self, spider ):
-        '''
-        @brief  Function to catch the signal of finished spider
-        @param  spider 
-                The spider that launch the signal
-        '''
-        self.pagesToScrap = spider.numberOfPages
-
-        # Now is time to get the strings
         self.get_strings()
 
     def get_strings(self):
@@ -74,10 +58,5 @@ class main(object):
         '''
         run_a_spider_on_script( spider = GetstringsSpider )
     
-    def get_NumberOfPages(self):
-
-        run_a_spider_on_script( spider = GetnumberpagesSpider,
-                                slot   = self.slot_pagesToScrap)
 
 main_obj = main()
-main_obj.initate()
