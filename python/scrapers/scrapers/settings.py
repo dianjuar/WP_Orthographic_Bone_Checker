@@ -14,6 +14,9 @@ BOT_NAME = 'scrapers'
 SPIDER_MODULES = ['scrapers.spiders']
 NEWSPIDER_MODULE = 'scrapers.spiders'
 
+ITEM_PIPELINES = {
+'scrapers.pipelines.checkStringPipeline': 300
+}
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'scrapers (+http://www.yourdomain.com)'
