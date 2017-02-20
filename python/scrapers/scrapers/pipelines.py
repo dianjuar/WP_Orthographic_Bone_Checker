@@ -6,6 +6,7 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 from scrapy import signals
 from enchant.checker import SpellChecker 
+from scrapy.exceptions import DropItem
 import pdb
 
 #- Items
@@ -43,12 +44,16 @@ class checkStringPipeline(object):
         # Number of pages
         if( type( item ) is item_numberOfPages ):
             self.process_item_numberOfPages( item, spider )
+            raise DropItem("Number of Pages to scrap %s" % item)
+
         # strings
         elif( type( item ) is item_stringToAnalize ):
             validItem = self.process_item_stringToAnalize( item, spider )
 
             if( validItem ):
                 return item
+            else:
+                raise DropItem("No error detected with %s" % item)
 
         # return item
 
@@ -64,7 +69,7 @@ class checkStringPipeline(object):
                 False
                     if the item has no errors, so needs to be rejected    
         '''
-        s = SpellChecker('en_US')
+        s = SpellChecker('es')
         s.set_text( item['string'] )
 
         return self.has_errors( s )
