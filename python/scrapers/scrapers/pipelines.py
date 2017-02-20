@@ -5,7 +5,13 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 from scrapy import signals
+from enchant.checker import SpellChecker 
 import pdb
+
+#- Items
+from scrapers.items import item_numberOfPages
+from scrapers.items import item_stringToAnalize
+#- Items
 
 
 class ScrapersPipeline(object):
@@ -31,6 +37,46 @@ class checkStringPipeline(object):
         pass
 
     def process_item(self, item, spider):
-        # do spell checker  
-        # item['string'] = item['string'] + 'hacked'
-        return item
+        '''
+        Using enchant to do spell checking
+        '''
+        # Number of pages
+        if( type( item ) is item_numberOfPages ):
+            self.process_item_numberOfPages( item, spider )
+        # strings
+        elif( type( item ) is item_stringToAnalize ):
+            validItem = self.process_item_stringToAnalize( item, spider )
+
+            if( validItem ):
+                return item
+
+        # return item
+
+    def process_item_numberOfPages(self, item, spider):
+        pass
+
+    def process_item_stringToAnalize(self, item, spider):
+        '''
+        @brief process the item stringToAnalize
+
+        @return True 
+                    if the item has errors
+                False
+                    if the item has no errors, so needs to be rejected    
+        '''
+        s = SpellChecker('en_US')
+        s.set_text( item['string'] )
+
+        return self.has_errors( s )
+    
+    def has_errors(self, spellChecker ):
+        '''
+        @brief Verify if the spellchekr object has spelling errors
+        '''
+        hasIt = False
+
+        for err in spellChecker:
+            hasIt = True
+            break;
+
+        return hasIt
