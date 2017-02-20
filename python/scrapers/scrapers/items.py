@@ -29,5 +29,8 @@ class item_stringToAnalize(scrapy.Item):
     # The url where the string is located
     url = scrapy.Field()
 
+    # Bad words. List of the word detected as error
+    errors = scrapy.Field()
+
     # define the fields for your item here like:
     # name = scrapy.Field()

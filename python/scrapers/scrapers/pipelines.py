@@ -48,40 +48,36 @@ class checkStringPipeline(object):
 
         # strings
         elif( type( item ) is item_stringToAnalize ):
-            validItem = self.process_item_stringToAnalize( item, spider )
+            detectErrors = self.detectErrors( item['string'] )
 
-            if( validItem ):
+            if( detectErrors is not False):
+                items['erros'] = detectErrors
                 return item
             else:
-                raise DropItem("No error detected with %s" % item)
+                raise DropItem("No error detected on %s" % item)
 
         # return item
 
     def process_item_numberOfPages(self, item, spider):
         pass
 
-    def process_item_stringToAnalize(self, item, spider):
-        '''
-        @brief process the item stringToAnalize
+    def detectErrors(self, string ):
 
-        @return True 
-                    if the item has errors
-                False
-                    if the item has no errors, so needs to be rejected    
+        spellChecker = SpellChecker('es')
+        spellChecker.set_text( string )
         '''
-        s = SpellChecker('es')
-        s.set_text( item['string'] )
+        @brief get all errors given a string
+        @return False
+                Doesn't have errors.
 
-        return self.has_errors( s )
-    
-    def has_errors(self, spellChecker ):
+                Dict
+                With the erros
         '''
-        @brief Verify if the spellchekr object has spelling errors
-        '''
-        hasIt = False
+        errors = False
 
         for err in spellChecker:
-            hasIt = True
-            break;
+            pass
 
-        return hasIt
+        # value_is_true if condition else value_is_false
+        # "fat" if is_fat else "not fat"
+        return False if (errors is not type(dict())) else errors 
