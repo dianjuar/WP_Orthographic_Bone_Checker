@@ -65,7 +65,7 @@ class GetstringsSpider(scrapy.Spider):
                                                 text()''')
 
         # If debug is set, nPages = 10
-        self.nPages = int( nPagesToScrap.extract_first() ) if self.debug is False else 10
+        self.nPages = int( nPagesToScrap.extract_first() ) if self.debug is False else 5
 
         item_npages = item_numberOfPages()
         item_npages['numberOfPages'] = self.nPages
