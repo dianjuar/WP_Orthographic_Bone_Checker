@@ -104,15 +104,21 @@ class checkStringPipeline(object):
         return errors
 
 
-    def applyRegEx(self, string):
+    def applyRegEx(self, string, regEx = None):
         '''
         Some words are just need to be as it, for example: 
         &laquo; Página anterior
         ^
         &mdash; Elegir &mdash;
+
+        @param  string
+                Testing proposes
+
+        @param  regEx
+                Regular Expression, testing proposes.
         ^              ^
 
         Here will be applicated several regular expresion to verify if the word is valid or not.
         '''
 
-        return re.sub("[\&[\w]\;]", '', string)
+        return re.sub('&[\w]*;' if regEx is None else regEx, '', string)
