@@ -22,6 +22,15 @@ class ScrapersPipeline(object):
 class checkStringPipeline(object):
 
     def __init__(self):
+
+        '''
+        To accomplish https://github.com/dianjuar/WP_Orthographic_Bone_Checker/issues/2
+
+        Several strings are "false positives", like URL, plugin, WordPress, IDs, facebook, youtube.
+
+        A custom database will be created by hand. The wrong words will be stored in this list and selected by hand.
+        '''
+        self.wrongWords = list()
         pass
 
     @classmethod
@@ -35,6 +44,11 @@ class checkStringPipeline(object):
         pass
 
     def spider_closed(self, spider):
+
+        print( "Errors detected ----------------------------- ")
+        print(self.wrongWords)
+        print( "Errors detected ----------------------------- ")
+        # pdb.set_trace()
         pass
 
     def process_item(self, item, spider):
@@ -61,6 +75,7 @@ class checkStringPipeline(object):
     def process_item_numberOfPages(self, item, spider):
         pass
 
+
     def detectErrors(self, string ):
         '''
         @brief get all errors given a string
@@ -77,6 +92,7 @@ class checkStringPipeline(object):
 
         errors = False
 
+
         for err in spellChecker:
             
             # Verify if the word is ok on English
@@ -91,10 +107,19 @@ class checkStringPipeline(object):
             
             errors['errorWord'].append( err.word )
 
-        if ( errors is type(dict()) ):
-            print( errors )
-            pdb.set_trace()
+            # Add the bad word to the list
+            self.addNewBadWord( err.word )
 
         # value_is_true if condition else value_is_false
         # "fat" if is_fat else "not fat"
         return errors
+
+    def addNewBadWord(self, string):
+        '''
+        store in self.wrongWords the string given via parameter.errors
+        A simple verify process applied, just not to be a repeated word
+        '''
+        if string not in self.wrongWords:
+            self.wrongWords.append( string )
+        
+        pass
