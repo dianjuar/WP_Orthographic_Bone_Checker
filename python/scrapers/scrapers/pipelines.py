@@ -7,6 +7,7 @@
 from scrapy import signals
 from enchant.checker import SpellChecker 
 from scrapy.exceptions import DropItem
+import re
 import pdb
 
 #- Items
@@ -73,6 +74,9 @@ class checkStringPipeline(object):
         spellChecker = SpellChecker('es')
         spellChecker_en = SpellChecker('en_US')
         
+        # Replace some strings that match with regular expressions with empty
+        string = self.applyRegEx( string )
+
         spellChecker.set_text( string )
 
         errors = False
@@ -98,3 +102,17 @@ class checkStringPipeline(object):
         # value_is_true if condition else value_is_false
         # "fat" if is_fat else "not fat"
         return errors
+
+
+    def applyRegEx(self, string):
+        '''
+        Some words are just need to be as it, for example: 
+        &laquo; Página anterior
+        ^
+        &mdash; Elegir &mdash;
+        ^              ^
+
+        Here will be applicated several regular expresion to verify if the word is valid or not.
+        '''
+
+        return re.sub("[\&[\w]\;]", '', string)
