@@ -67,16 +67,24 @@ class checkStringPipeline(object):
         @return False
                 Doesn't have errors.
 
-                Dict
-                With the erros
+                Dict()
+                Dict With the errors
         '''
         spellChecker = SpellChecker('es')
+        spellChecker_en = SpellChecker('en_US')
+        
         spellChecker.set_text( string )
 
         errors = False
 
         for err in spellChecker:
-            # convert only once errors to a dictionery
+            
+            # Verify if the word is ok on English
+            # Several words are on English so they are marked as error
+            if ( spellChecker_en.check( err.word ) is True ):
+                continue
+
+            # convert only once errors to a dictionary
             if type(errors) is not dict() :
                 errors = {}
                 errors['errorWord'] = list()
