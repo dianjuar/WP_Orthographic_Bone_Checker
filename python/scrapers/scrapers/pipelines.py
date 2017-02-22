@@ -7,13 +7,20 @@
 from scrapy import signals
 from enchant.checker import SpellChecker 
 from scrapy.exceptions import DropItem
-import re
 import pdb
 
 #- Items
 from scrapers.items import item_numberOfPages
 from scrapers.items import item_stringToAnalize
 #- Items
+
+#- enchant filters
+from enchant.tokenize import EmailFilter, URLFilter
+
+import sys
+sys.path.append('../')
+from custom_enchant_filters.custom_filters import *
+#- enchant filters
 
 
 class ScrapersPipeline(object):
@@ -86,12 +93,9 @@ class checkStringPipeline(object):
                 Dict()
                 Dict With the errors
         '''
-        spellChecker = SpellChecker('es')
-        spellChecker_en = SpellChecker('en_US')
+        spellChecker = SpellChecker('es', filters=[EmailFilter,URLFilter,HtmlStuffFilter])
+        spellChecker_en = SpellChecker('en_US' )
         
-        # Replace some strings that match with regular expressions with empty
-        string = self.applyRegEx( string )
-
         spellChecker.set_text( string )
 
         errors = False
@@ -127,22 +131,3 @@ class checkStringPipeline(object):
             self.wrongWords.append( string )
         
         pass
-
-    def applyRegEx(self, string, regEx = None):
-        '''
-        Some words are just need to be as it, for example: 
-        &laquo; Página anterior
-        ^
-        &mdash; Elegir &mdash;
-
-        @param  string
-                Testing proposes
-
-        @param  regEx
-                Regular Expression, testing proposes.
-        ^              ^
-
-        Here will be applicated several regular expresion to verify if the word is valid or not.
-        '''
-
-        return re.sub('&[\w]*;' if regEx is None else regEx, '', string)
