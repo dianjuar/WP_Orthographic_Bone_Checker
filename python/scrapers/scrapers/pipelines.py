@@ -69,13 +69,13 @@ class checkStringPipeline(object):
         elif( type( item ) is item_stringToAnalize ):
             detectErrors = self.detectErrors( item['string'] )
 
-            if( detectErrors is not False):
-                item['errors'] = detectErrors
-                return item
-            else:
+            if( detectErrors is False):
                 raise DropItem("No error detected on %s" % item)
+                return
 
-        # return item
+            # If there is erros return the detected ones
+            item['errors'] = detectErrors
+            return item
 
     def process_item_numberOfPages(self, item, spider):
         pass
