@@ -49,7 +49,6 @@ class checkStringPipeline(object):
         pass
 
     def spider_closed(self, spider):
-
         print( "Errors detected ----------------------------- ")
         print(self.wrongWords)
         print( "Errors detected ----------------------------- ")
@@ -90,16 +89,15 @@ class checkStringPipeline(object):
                 Dict()
                 Dict With the errors
         '''
-        spellChecker = SpellChecker('es', filters=[EmailFilter,URLFilter,HtmlStuffFilter])
+        spellChecker = SpellChecker('es', filters=[EmailFilter,URLFilter,HtmlEntitiesFilter])
         spellChecker_en = SpellChecker('en_US' )
-        
+
         spellChecker.set_text( string )
 
         errors = False
 
-
         for err in spellChecker:
-            
+
             # Verify if the word is ok on English
             # Several words are on English so they are marked as error
             if ( spellChecker_en.check( err.word ) is True ):
@@ -109,7 +107,7 @@ class checkStringPipeline(object):
             if type(errors) is not dict() :
                 errors = {}
                 errors['errorWord'] = list()
-            
+
             errors['errorWord'].append( err.word )
 
             # Add the bad word to the list
@@ -126,5 +124,5 @@ class checkStringPipeline(object):
         '''
         if string not in self.wrongWords:
             self.wrongWords.append( string )
-        
+
         pass
