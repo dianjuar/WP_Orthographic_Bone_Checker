@@ -4,24 +4,21 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
-from scrapy import signals
-from enchant.checker import SpellChecker 
-from scrapy.exceptions import DropItem
-import pdb
 
-#- Items
+# - PyEnchat SpellChecker
+from enchant.checker import SpellChecker
+# - enchant filters
+from enchant.tokenize import EmailFilter, URLFilter
+# - Items
 from scrapers.items import item_numberOfPages
 from scrapers.items import item_stringToAnalize
-#- Items
-
-#- enchant filters
-from enchant.tokenize import EmailFilter, URLFilter
-
-import sys
-sys.path.append('../')
-from custom_enchant_filters.custom_filters import *
-#- enchant filters
-
+# - Scrapy stuff
+from scrapy import signals
+from scrapy.exceptions import DropItem
+# - Custom enchant filters
+from spellchecker.custom_enchant_filters import HtmlEntitiesFilter
+# - Debugger
+import pdb
 
 class ScrapersPipeline(object):
     def process_item(self, item, spider):
