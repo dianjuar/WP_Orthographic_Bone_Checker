@@ -30,13 +30,13 @@ class ScrapersPipeline(object):
 
 
 class checkStringPipeline(object):
-    # Path to the custom dict that contains the WP words, like
+    # Path to the Personal Word List that contains the WP words, like
     # CSS, PHP, WordPress
-    en_US_WP_dic = ''
+    enUSWP_PWL_path = ''
 
-    # Path to the custom dict that contains the espanish words, like
+    # Path to the Personal Word List that contains the spanish words, like
     # Abr, Ago...
-    es_WP_dic = ''
+    es_PWL_path = ''
 
     def __init__(self):
         '''
@@ -46,21 +46,20 @@ class checkStringPipeline(object):
         Several strings are "false positives", like URL, plugin, WordPress, IDs,
         facebook, youtube.
 
-        A custom database will be created by hand. The wrong words will be
-        stored in this list and selected by hand.
+        A personal word list will be used to do it.
         '''
 
         # List with spelling erros
         self.wrongWords = list()
 
-        # Path of the custom Dict of WP. Contains words like CSS, PHP, fopen ...
-        self.enUSWP_dic_path = self.path_custom_dict('en_US_WP.txt')
+        # Path of the PWL of WP. Contains words like CSS, PHP, fopen ...
+        self.enUSWP_PWL = self.path_PWL('enUSWP_PWL.txt')
+        self.es_PWL_path = self.path_PWL('es_PWL.txt')
 
         # Spellchecker of english. Some words still used on any lengauge. We
         # need to verify the words on english too.
-        self.spellChecker_en = self.init_spellchecker_with_pwlDict(
-            lang='en_US',
-            dict_path=self.enUSWP_dic_path)
+        self.dict_en_WP_PWL = enchant.DictWithPWL('en_US',
+                                                  pwl=self.enUSWP_PWL)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -112,23 +111,26 @@ class checkStringPipeline(object):
                 Dict()
                 Dict With the errors
         '''
-        spellChecker = SpellChecker('es',
-                                    filters=[EmailFilter,
-                                             URLFilter,
-                                             HtmlEntitiesFilter,
-                                             sprintfParametersFilter])
 
+        spellChecker = SpellChecker('es', filters=[EmailFilter,
+                                                   URLFilter,
+                                                   HtmlEntitiesFilter,
+                                                   sprintfParametersFilter])
         spellChecker.set_text(string)
+
+        PWL_es = enchant.request_pwl_dict(self.es_PWL_path)
 
         errors = False
 
         for err in spellChecker:
-
             # Verify if the word is ok on English
             # Several words are on English so they are marked as error
-            if (self.spellChecker_en.check(err.word) is True):
+            if (self.dict_en_WP_PWL.check(err.word) is True):
                 continue
 
+            # Verify if the word is ok on Es PWL
+            if (PWL_es.check(err.word) is True):
+                continue
             # convert only once errors to a dictionary
             if type(errors) is not dict():
                 errors = {}
@@ -153,7 +155,7 @@ class checkStringPipeline(object):
 
         pass
 
-    def path_custom_dict(self, file_name):
+    def path_PWL(self, file_name):
         '''
         Return the path of the custom dictionary stored on
         spellchecker.personal_word_list
@@ -166,22 +168,3 @@ class checkStringPipeline(object):
                             'spellchecker',
                             'personal_word_list',
                             file_name)
-
-    def init_spellchecker_with_pwlDict(self, lang, dict_path):
-        '''
-        Given and PyEnchat SpellChecker, set the custom dict given on the
-        second parameter
-
-        @param  lang
-                Langaguage of the dict, 'en_US', 'es', etci
-        @param  dict_path
-                Path of the custom dict
-
-        @return A instantiated SpellChecker obj with PWL dict (custom dict)
-        '''
-        spellChecker = SpellChecker()
-        spellChecker = enchant.DictWithPWL(
-            lang,
-            self.enUSWP_dic_path)
-
-        return spellChecker
