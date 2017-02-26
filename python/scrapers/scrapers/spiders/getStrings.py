@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import scrapy
 import pdb
+import scrapy
 
 # -items
 # Import the item right. For test purposes this spider will call in several ways
@@ -37,8 +37,6 @@ class GetstringsSpider(scrapy.Spider):
                 the page stract the strings
         @param args
         @param kwargs
-
-        @ref http://stackoverflow.com/questions/15611605/how-to-pass-a-user-defined-argument-in-scrapy-spider
         '''
         # Constructor
         super(GetstringsSpider, self).__init__(*args, **kwargs)
@@ -46,7 +44,8 @@ class GetstringsSpider(scrapy.Spider):
         # Load the start_urls received via parameter, if not passed, the url of
         # the WP development project in spanish is set
         if (WPTpage is None):
-            self.start_urls = ['https://translate.wordpress.org/projects/wp/dev/es/default']
+            url = 'https://translate.wordpress.org/projects/wp/dev/es/default'
+            self.start_urls = [url]
         else:
             self.start_urls = [WPTpage]
 
@@ -65,8 +64,9 @@ class GetstringsSpider(scrapy.Spider):
                                             preceding::a[1]/
                                                 text()''')
 
-        # If debug is set, nPages = 10
-        self.nPages = int(nPagesToScrap.extract_first()) if self.debug is False else 5
+        # If debug is set, nPages = 5
+        nPagesToScrap = int(nPagesToScrap.extract_first())
+        self.nPages = nPagesToScrap if self.debug is False else 5
 
         item_npages = item_numberOfPages()
         item_npages['numberOfPages'] = self.nPages
