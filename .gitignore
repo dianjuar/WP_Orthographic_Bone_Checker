@@ -155,3 +155,9 @@ VENV_*
 .ropeproject
 
 # End of https://www.gitignore.io/api/python,node
+
+
+# ------------- CUSTOM IGNORES -----------------
+# Ignoring CSV and JSON for the scrapers...
+python/scrapers/*.csv
+python/scrapers/*.json
