@@ -48,12 +48,11 @@ class checkStringPipeline(object):
 
         self.enUSWP_dic_path = self.path_custom_dict('en_US_WP.txt')
 
-        # English Dict, severeal strings has not translation
-        self.spellChecker_en = SpellChecker()
-        self.spellChecker_en.dict = enchant.DictWithPWL(
-            'en_US',
-            self.enUSWP_dic_path)
-        pass
+        # Spellchecker of english. Some words still used on any lengauge. We
+        # need to verify the words on english too.
+        self.spellChecker_en = self.init_spellchecker_with_pwlDict(
+            lang='en_US',
+            dict_path=self.enUSWP_dic_path)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -159,3 +158,22 @@ class checkStringPipeline(object):
                             'spellchecker',
                             'personal_word_list',
                             file_name)
+
+    def init_spellchecker_with_pwlDict(self, lang, dict_path):
+        '''
+        Given and PyEnchat SpellChecker, set the custom dict given on the
+        second parameter
+
+        @param  lang
+                Langaguage of the dict, 'en_US', 'es', etci
+        @param  dict_path
+                Path of the custom dict
+
+        @return A instantiated SpellChecker obj with PWL dict (custom dict)
+        '''
+        spellChecker = SpellChecker()
+        spellChecker = enchant.DictWithPWL(
+            lang,
+            self.enUSWP_dic_path)
+
+        return spellChecker
