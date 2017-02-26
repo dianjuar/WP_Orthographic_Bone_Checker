@@ -17,7 +17,8 @@ from scrapers.items import item_stringToAnalize
 from scrapy import signals
 from scrapy.exceptions import DropItem
 # - Custom enchant filters
-from spellchecker.custom_enchant_filters import HtmlEntitiesFilter, sprintfParametersFilter
+from spellchecker.custom_enchant_filters import HtmlEntitiesFilter
+from spellchecker.custom_enchant_filters import sprintfParametersFilter
 # - Debugger
 import pdb
 import os
@@ -33,6 +34,10 @@ class checkStringPipeline(object):
     # CSS, PHP, WordPress
     en_US_WP_dic = ''
 
+    # Path to the custom dict that contains the espanish words, like
+    # Abr, Ago...
+    es_WP_dic = ''
+
     def __init__(self):
         '''
         To accomplish
@@ -44,8 +49,11 @@ class checkStringPipeline(object):
         A custom database will be created by hand. The wrong words will be
         stored in this list and selected by hand.
         '''
+
+        # List with spelling erros
         self.wrongWords = list()
 
+        # Path of the custom Dict of WP. Contains words like CSS, PHP, fopen ...
         self.enUSWP_dic_path = self.path_custom_dict('en_US_WP.txt')
 
         # Spellchecker of english. Some words still used on any lengauge. We
