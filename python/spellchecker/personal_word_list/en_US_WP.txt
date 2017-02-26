@@ -51,3 +51,6 @@ SITEURL
 Requier
 JSON
 shortcode
+IM
+fopen
+Blavatar
